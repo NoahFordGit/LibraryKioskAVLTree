@@ -8,64 +8,139 @@ namespace Project4.AVL_Tree
 {
     internal class AVLTree
     {
-        public Node Head { get; set; }
-        public AVLTree(Node head) { Head = head; }
+        private Node? _root;
+        private Comparison<Book> _compare; // chatgpt, sorting rules must be defined on instantiation
+
+        public AVLTree(Comparison<Book> comparison)
+        {
+            _compare = comparison;
+        }
 
         private int Height(Node? node)
         {
             return node?.Height ?? 0; // return node height or 0 if null -- chatgpt
         }
 
-        private int FindHeight(Node? node)
+        private void UpdateHeight(Node node)
         {
-            if (node == null) return -1;
-            int height = 1 + Math.Max(Height(node.Right), Height(node.Left));
-
-            return height;
+            node.Height = 1 + Math.Max(Height(node.Right), Height(node.Left));
         }
 
-        private int FindBalance(Node node)
+        private int GetBalance(Node node)
         {
-            int balance = Math.Abs(Height(node.Left) - Height(node.Right));
+            int balance = Height(node.Left) - Height(node.Right);
             return balance;
         }
 
         private Node RightRotate(Node y)
         {
-            Node x = y.Left;
-            Node xr = x.Right;
+            Node x = y.Left!;
+            Node xr = x.Right!;
 
             x.Right = y;
             y.Left = xr;
 
-            x.Height = FindHeight(x);
-            y.Height = FindHeight(y);
+            UpdateHeight(x);
+            UpdateHeight(y);
 
             return x;
         }
 
         private Node LeftRotate(Node y)
         {
-            Node x = y.Right;
-            Node xl = x.Left;
+            Node x = y.Right!;
+            Node xl = x.Left!;
 
             x.Left = y;
             y.Right = xl;
 
-            x.Height = FindHeight(x);
-            y.Height = FindHeight(y);
+            UpdateHeight(x);
+            UpdateHeight(y);
 
             return x;
         }
 
-        public Node Insert(Node node)
+        public void Insert(Book book)
         {
+            _root = Insert(_root, book);
+        }
 
+        private Node Insert(Node? node, Book book)
+        {
+            if (node == null)
+                return new Node(book);
+
+            if (_compare(book, node.Data) < 0)
+                node.Left = Insert(node.Left, book);
+
+            else if (_compare(book, node.Data) > 0)
+                node.Right = Insert(node.Right, book);
+
+            else
+                return node;
+
+            UpdateHeight(node);
+
+            int balance = GetBalance(node);
+
+            if (balance > 1)
+            {
+                if (_compare(book, node.Data) < 0)
+                    return RightRotate(node);
+                else
+                {
+                    node.Left = LeftRotate(node.Left!);
+                    return RightRotate(node);
+                }
+            }    
+
+            if (balance < -1)
+            {
+                if (_compare(book, node.Data) > 0)
+                    return LeftRotate(node);
+                else
+                {
+                    node.Right = RightRotate(node.Right!);
+                    return LeftRotate(node);
+                }
+            }
+
+            return node;
         }
 
         public void Remove(Node node)
         {
 
+        }
+
+
+        public void InOrder()
+        {
+            InOrder(_root);
+        }
+
+        private void InOrder(Node? node)
+        {
+            if (node == null) return;
+
+            InOrder(node.Left);
+            node.Data.Print();
+            InOrder(node.Right);
+        }
+        public void PrintTree()
+        {
+            PrintTree(_root, 0);
+        }
+
+        private void PrintTree(Node? node, int indent)
+        {
+            if (node == null) return;
+
+            PrintTree(node.Right, indent + 4);
+
+            Console.WriteLine(new string(' ', indent) + node.Data.Title);
+
+            PrintTree(node.Left, indent + 4);
         }
     }
 }
