@@ -44,4 +44,5 @@ dotnet run
 
 ## Notes
 This project demonstrates AVL Trees, recursion, and delegate-based sorting strategies in a structured console application.
+
 Made for ETSU CSCI-2210 (Data Structures and Algorithms)
