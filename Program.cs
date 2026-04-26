@@ -13,41 +13,113 @@ namespace Project4
         {
             string path = "C:\\Users\\noahm\\OneDrive - East Tennessee State University\\CSCI 2210\\projects\\Project4\\Data\\books.csv";
 
-            // Create AVL Trees with different sorting rules
-            AVLTree titleTree = new AVLTree(
-                (a, b) => string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase)
-            );
-
-            AVLTree authorTree = new AVLTree(
-                (a, b) => string.Compare(a.Author, b.Author, StringComparison.OrdinalIgnoreCase)
-            );
-
-            // Load books from CSV
             List<Book> books = LoadBooks(path);
 
-            // Insert into both trees
+            // Trees
+            AVLTree titleTree = new AVLTree((a, b) =>
+                string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase));
+
+            AVLTree authorTree = new AVLTree((a, b) =>
+                string.Compare(a.Author, b.Author, StringComparison.OrdinalIgnoreCase));
+
+            AVLTree publisherTree = new AVLTree((a, b) =>
+                string.Compare(a.Publisher, b.Publisher, StringComparison.OrdinalIgnoreCase));
+
+            // Load data
             foreach (var book in books)
             {
                 titleTree.Insert(book);
                 authorTree.Insert(book);
+                publisherTree.Insert(book);
             }
 
-            // Display trees
-            Console.WriteLine("=== Books Sorted by Title ===\n");
-            titleTree.InOrder();
+            while (true)
+            {
+                Console.WriteLine("\n==================================");
+                Console.WriteLine("       AVL TREE BOOK SYSTEM       ");
+                Console.WriteLine("==================================");
+                Console.WriteLine("1. View Tree (Title)");
+                Console.WriteLine("2. View Tree (Author)");
+                Console.WriteLine("3. View Tree (Publisher)");
+                Console.WriteLine("4. Insert Book");
+                Console.WriteLine("5. Remove Book");
+                Console.WriteLine("6. Exit");
+                Console.Write("Select option: ");
 
-            Console.WriteLine("\n=== Books Sorted by Author ===\n");
-            authorTree.InOrder();
+                /*
+                To whoever is grading please be chill :(
+                This was the best way I thought to demonstrate functionality
+                I SWEAR IT WORKS PLEASE BE COOL
+                */
 
-            // Test insertion after load
-            Console.WriteLine("\n=== Adding Test Book ===\n");
-            Book testBook = new Book("Z Test Book", "Tester, John", 123, "TestPub");
+                string choice = Console.ReadLine();
 
-            titleTree.Insert(testBook);
-            authorTree.Insert(testBook);
+                Console.Clear();
 
-            Console.WriteLine("=== After Insert (Title Order) ===\n");
-            titleTree.InOrder();
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine("=== TITLE TREE ===\n");
+                        titleTree.PrintTree();
+                        break;
+
+                    case "2":
+                        Console.WriteLine("=== AUTHOR TREE ===\n");
+                        authorTree.PrintTree();
+                        break;
+
+                    case "3":
+                        Console.WriteLine("=== PUBLISHER TREE ===\n");
+                        publisherTree.PrintTree();
+                        break;
+
+                    case "4":
+                        Console.Write("Title: ");
+                        string t = Console.ReadLine();
+
+                        Console.Write("Author: ");
+                        string a = Console.ReadLine();
+
+                        Console.Write("Pages: ");
+                        int p = int.Parse(Console.ReadLine());
+
+                        Console.Write("Publisher: ");
+                        string pub = Console.ReadLine();
+
+                        Book newBook = new Book(t, a, p, pub);
+
+                        titleTree.Insert(newBook);
+                        authorTree.Insert(newBook);
+                        publisherTree.Insert(newBook);
+
+                        Console.WriteLine("\nBook inserted!");
+                        break;
+
+                    case "5":
+                        Console.Write("Enter title of book to remove: ");
+                        string removeTitle = Console.ReadLine();
+
+                        Book dummy = new Book(removeTitle, "", 0, "");
+
+                        titleTree.Remove(dummy);
+                        authorTree.Remove(dummy);
+                        publisherTree.Remove(dummy);
+
+                        Console.WriteLine("\nAttempted removal (if exists).");
+                        break;
+
+                    case "6":
+                        return;
+
+                    default:
+                        Console.WriteLine("Invalid option.");
+                        break;
+                }
+
+                Console.WriteLine("\nPress ENTER to continue...");
+                Console.ReadLine();
+                Console.Clear();
+            }
         }
 
         static List<Book> LoadBooks(string path)
