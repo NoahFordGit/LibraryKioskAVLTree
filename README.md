@@ -1,7 +1,5 @@
 # 📚 Library Kiosk AVL Tree System
 
----
-
 ## Overview
 This project implements an AVL Tree-based library system in C#.  
 Books are stored in self-balancing binary search trees and can be ordered dynamically using different comparison rules (Title, Author, Publisher).
